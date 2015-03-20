@@ -1,0 +1,176 @@
+<!doctype html>
+<html style="height: 100%;">
+  <head>
+    <title>Wolfpack Chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; background-image: url("http://fc08.deviantart.net/fs70/i/2013/028/8/f/wolf_paw_print_by_midnight_the_kitten-d5t12if.jpg"); background-repeat: no-repeat; background-attachment: fixed;
+    background-position: center;}
+      form { /*background: #000;*/ padding: 3px; position: relative; bottom: 0; width: 100%; }
+      form input { border: 2px; border-style: groove; border-color: black; border-radius: 10px; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; border-radius: 10px; background: rgb(35, 122, 104); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      /*#messages li:nth-child(odd) { background: #eee; }*/
+    </style>
+  </head>
+  <body style="height: 100%;">
+    <ul id="messages" >
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    </ul>
+    <p id="typingStatus" style="color: white; position: relative;">w</p>
+    <form action="">
+      <input onkeydown="onKeyDown()" id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+    	var socket = io();
+      var typing = false;
+      var timeout = undefined;
+
+      function timeoutFunction(){
+        typing = false;
+        socket.emit('stopped typing');
+      }
+
+      function onKeyDown(){
+        if(typing == false) {
+          typing = true
+          socket.emit('typing');
+          timeout = setTimeout(timeoutFunction, 400);
+        } else {
+          clearTimeout(timeout);
+          timeout = setTimeout(timeoutFunction, 400);
+        }
+
+      }
+
+      var messageBy5 = 0;
+    	$('form').submit(function(){
+    		socket.emit('chat message', $('#m').val());
+    		$('#m').val('');
+    		return false;
+    	});
+       function pageScroll() {
+          window.scrollBy(0,10000); 
+          //scrolldelay = setTimeout('pageScroll()',1); 
+        }
+      $(document).ready(function(){
+        pageScroll();
+        $('#typingStatus').css('color', 'white');
+      });
+    	socket.on('chat message', function(msg){
+    		$('#messages').append($('<li>').text(msg));
+        pageScroll();
+        messageBy5 += 1;
+    	});
+      socket.on('is typing', function(typeState){
+        //alert('is typing');
+        $('#typingStatus').text(typeState + '...');
+        $('#typingStatus').css('color', 'black');
+      });
+      socket.on('not typing', function(){
+        $('#typingStatus').text('w');
+        $('#typingStatus').css('color', 'white');
+      });
+    </script>
+  </body>
+</html>
