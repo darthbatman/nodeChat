@@ -88,14 +88,15 @@ app.get(testString, function(req, res){
 
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/login.html');
+	console.log("Someone accessed the website.");
 	//res.sendFile(__dirname + '/index.html');
 	ipAdd = req.connection.remoteAddress;
 });
 
-
+var appUsername;
 
 io.on('connection', function(socket){
-	socket.username = chatName;
+	//socket.username = chatName;
 	//console.log(socket.handshake.address);
  	//console.log(socket.client.conn.remoteAddress);
 
@@ -112,7 +113,29 @@ io.on('connection', function(socket){
  		socket.broadcast.emit('not typing');
  	});
 
+ 	
+
+ 	socket.on("Login Attempt", function(appUser, appPass){
+ 		console.log(appUser + ": " + appPass);
+ 		user.find({name: appUser}, function(err, docs){
+ 			if (appPass == docs[0].password) {
+ 				appUsername = appUser;
+ 				console.log("Login successful for " + appUsername);
+ 				io.emit('Login Successful');
+ 			}
+ 
+ 		});
+ 	});
+
 	socket.on('chat message', function(msg){
+		if (socket.username != appUsername) {
+			socket.username = chatName;
+		}
+		if (!socket.username || socket.username == "undefined") {
+			socket.username = appUsername;
+		}
+
+		
 		console.log(socket.username);
 		console.log(socket.handshake.address);
   		//console.log(socket.client.conn.remoteAddress);
